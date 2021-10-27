@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.hk.trendingrepos.databinding.ActivityMainBinding
@@ -21,14 +22,17 @@ class MainActivity : AppCompatActivity(),MainActivityPresenter.ViewCallBack {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        val retryImageView = findViewById<ImageView>(R.id.retry_image_view)
-        Glide.with(this).load(R.drawable.retry_gif).into(retryImageView)
-
         presenter = MainActivityPresenter(this)
 
         adapter = setRecyclerAdapter()
 
-        presenter.getRepositories()
+        presenter.getRepositories().observe(this, {
+            repositoryList.clear()
+            repositoryList.addAll(it)
+            adapter.notifyDataSetChanged()
+        })
+
+        presenter.getRepositoriesFromServer()
     }
 
     private fun setRecyclerAdapter(): RepositoryAdapter {
@@ -37,12 +41,6 @@ class MainActivity : AppCompatActivity(),MainActivityPresenter.ViewCallBack {
         val adapter = RepositoryAdapter(repositoryList)
         binding.repositoryRv.adapter = adapter
         return adapter
-    }
-
-    override fun updateRepositoryList(list: ArrayList<Repository>) {
-        this.repositoryList.clear()
-        this.repositoryList.addAll(list)
-        adapter.notifyDataSetChanged()
     }
 
     override fun showProgressBar() {
@@ -56,6 +54,8 @@ class MainActivity : AppCompatActivity(),MainActivityPresenter.ViewCallBack {
 
     override fun onRepositoryFetchFailed() {
         binding.retryView.visibility = View.VISIBLE
+        val retryImageView = findViewById<ImageView>(R.id.retry_image_view)
+        Glide.with(this).load(R.drawable.retry_gif).into(retryImageView)
         binding.retryTv.setOnClickListener{
             presenter.getRepositories()
         }

@@ -1,67 +1,44 @@
 package com.hk.trendingrepos.presenter
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.hk.trendingrepos.model.Repository
+import com.hk.trendingrepos.source.RepoRemoteSource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class MainActivityPresenter() {
-    private var repositoryList: ArrayList<Repository>
+    private val repositoryList: MutableLiveData<ArrayList<Repository>> by lazy { MutableLiveData<ArrayList<Repository>>() }
+
     private var view: ViewCallBack? = null
-    init {
-        repositoryList = arrayListOf()
-    }
-    constructor(view: ViewCallBack): this() {
-        this.repositoryList = arrayListOf()
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
+
+    constructor(view: ViewCallBack) : this() {
         this.view = view
     }
 
-    fun getRepositories(){
-        view?.showProgressBar()
-        repositoryList.add(
-            Repository(
-                userName = "hamza",
-                repositoryName = "Trending Repos",
-                repositoryDescription = "simple repo",
-                userImage = "https://avatars.githubusercontent.com/u/4314092?v=4",
-                language = "Kotlin",
-                starCount = 44
-            )
-        )
-        repositoryList.add(
-            Repository(
-                userName = "hamza",
-                repositoryName = "Tellotalk",
-                repositoryDescription = "simple repo",
-                userImage = "https://avatars.githubusercontent.com/u/4314092?v=4",
-                language = "Kotlin",
-                starCount = 44
-            )
-        )
-        repositoryList.add(
-            Repository(
-                userName = "hamza",
-                repositoryName = "Ebravo",
-                repositoryDescription = "simple repo",
-                userImage = "https://avatars.githubusercontent.com/u/4314092?v=4",
-                language = "Kotlin",
-                starCount = 44
-            )
-        )
-        repositoryList.add(
-            Repository(
-                userName = "hamza",
-                repositoryName = "Trending Repos",
-                repositoryDescription = "simple repo",
-                userImage = "https://avatars.githubusercontent.com/u/4314092?v=4",
-                language = "Kotlin",
-                starCount = 44
-            )
-        )
-        view?.hideProgressBar()
-        view?.updateRepositoryList(repositoryList)
-//        view?.onDataFetchFailed()
+    fun getRepositories(): LiveData<ArrayList<Repository>> {
+        return repositoryList
     }
+
+    fun getRepositoriesFromServer() {
+        view?.showProgressBar()
+        val repo = RepoRemoteSource()
+        coroutineScope.launch {
+            val response = repo.getRepositories()
+            view?.hideProgressBar()
+            if (response.isSuccessful()) {
+                response.data?.let {
+                    repositoryList.value = it
+                }
+            } else
+                view?.onRepositoryFetchFailed()
+        }
+    }
+
     interface ViewCallBack {
-        fun updateRepositoryList(list: ArrayList<Repository>)
         fun showProgressBar()
         fun hideProgressBar()
         fun onRepositoryFetchFailed()

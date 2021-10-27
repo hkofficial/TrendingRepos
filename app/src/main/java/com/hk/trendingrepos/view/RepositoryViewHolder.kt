@@ -12,7 +12,7 @@ class RepositoryViewHolder(
 
         binding.repository = repository
 
-        Glide.with(binding.root.context).load(repository.userImage).into(binding.userImage)
+        Glide.with(binding.root.context).load(repository.repoOwner.userImage).into(binding.userImage)
 
     }
 }

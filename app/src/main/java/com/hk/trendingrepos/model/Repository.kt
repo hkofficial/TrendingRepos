@@ -1,9 +1,17 @@
 package com.hk.trendingrepos.model
 
+import com.google.gson.annotations.SerializedName
+
+
 data class Repository(
-    val userName: String,
+    @SerializedName("full_name")
     val repositoryName: String,
+    @SerializedName("description")
     val repositoryDescription: String,
-    val userImage: String,
+    @SerializedName("language")
     val language: String,
-    val starCount: Int)
+    @SerializedName("stargazers_count")
+    val starCount: Int = 0,
+    @SerializedName("owner")
+    val repoOwner: RepositoryOwner
+)

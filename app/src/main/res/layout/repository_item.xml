@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@{repository.userName}"
+            android:text="@{repository.repoOwner.userName}"
             android:textColor="?colorOnSecondary"
             android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@id/user_image"
