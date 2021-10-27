@@ -1,6 +1,7 @@
 package com.hk.trendingrepos
 
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -8,9 +9,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.hk.trendingrepos.databinding.ActivityMainBinding
 import com.hk.trendingrepos.model.Repository
+import com.hk.trendingrepos.presenter.MainActivityPresenter
 import com.hk.trendingrepos.view.RepositoryAdapter
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),MainActivityPresenter.ViewCallBack {
+    private lateinit var adapter: RepositoryAdapter
+    private lateinit var presenter: MainActivityPresenter
     private lateinit var binding: ActivityMainBinding
     private val repositoryList = arrayListOf<Repository>()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,54 +23,41 @@ class MainActivity : AppCompatActivity() {
 
         val retryImageView = findViewById<ImageView>(R.id.retry_image_view)
         Glide.with(this).load(R.drawable.retry_gif).into(retryImageView)
-        val adapter = setRecyclerAdapter()
+
+        presenter = MainActivityPresenter(this)
+
+        adapter = setRecyclerAdapter()
+
+        presenter.getRepositories()
     }
 
     private fun setRecyclerAdapter(): RepositoryAdapter {
-        repositoryList.add(
-            Repository(
-                userName = "hamza",
-                repositoryName = "Trending Repos",
-                repositoryDescription = "simple repo",
-                userImage = "https://avatars.githubusercontent.com/u/4314092?v=4",
-                language = "Kotlin",
-                starCount = 44
-            )
-        )
-        repositoryList.add(
-            Repository(
-                userName = "hamza",
-                repositoryName = "Tellotalk",
-                repositoryDescription = "simple repo",
-                userImage = "https://avatars.githubusercontent.com/u/4314092?v=4",
-                language = "Kotlin",
-                starCount = 44
-            )
-        )
-        repositoryList.add(
-            Repository(
-                userName = "hamza",
-                repositoryName = "Ebravo",
-                repositoryDescription = "simple repo",
-                userImage = "https://avatars.githubusercontent.com/u/4314092?v=4",
-                language = "Kotlin",
-                starCount = 44
-            )
-        )
-        repositoryList.add(
-            Repository(
-                userName = "hamza",
-                repositoryName = "Trending Repos",
-                repositoryDescription = "simple repo",
-                userImage = "https://avatars.githubusercontent.com/u/4314092?v=4",
-                language = "Kotlin",
-                starCount = 44
-            )
-        )
         binding.repositoryRv.layoutManager =
             LinearLayoutManager(this)
         val adapter = RepositoryAdapter(repositoryList)
         binding.repositoryRv.adapter = adapter
         return adapter
+    }
+
+    override fun updateRepositoryList(list: ArrayList<Repository>) {
+        this.repositoryList.clear()
+        this.repositoryList.addAll(list)
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun showProgressBar() {
+        binding.shimmerViewContainer.visibility = View.VISIBLE
+    }
+
+    override fun hideProgressBar() {
+        binding.shimmerViewContainer.stopShimmer()
+        binding.shimmerViewContainer.visibility = View.GONE
+    }
+
+    override fun onRepositoryFetchFailed() {
+        binding.retryView.visibility = View.VISIBLE
+        binding.retryTv.setOnClickListener{
+            presenter.getRepositories()
+        }
     }
 }
