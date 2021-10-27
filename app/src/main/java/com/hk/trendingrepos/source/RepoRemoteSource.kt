@@ -13,12 +13,15 @@ class RepoRemoteSource {
                 val response = apiService.getRepositories().execute()
                 if (response.isSuccessful) {
                     response.body()?.repositories?.let {
+                        val repoLocalDataSource = RepoLocalDataSource()
+                        repoLocalDataSource.insertRepositories(it)
                         return@withContext ResponseState.success(it.toCollection(ArrayList()))
                     }
                     return@withContext ResponseState.error(response.message(), ResponseState.ErrorType.UNKNOWN_ERR)
                 } else
                     return@withContext ResponseState.error(response.message(), ResponseState.ErrorType.UNKNOWN_ERR)
             } catch (e: Exception) {
+                e.printStackTrace()
                 return@withContext ResponseState.error(
                     "Unknown Error Occurred",
                     ResponseState.ErrorType.UNKNOWN_ERR

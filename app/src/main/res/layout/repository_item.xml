@@ -5,7 +5,7 @@
 
         <variable
             name="repository"
-            type="com.hk.trendingrepos.model.Repository" />
+            type="com.hk.trendingrepos.model.RepositoryDto" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@{repository.repoOwner.userName}"
+            android:text="@{repository.owner.userName}"
             android:textColor="?colorOnSecondary"
             android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@id/user_image"
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="@{repository.repositoryName}"
+            android:text="@{repository.repository.repositoryName}"
             android:textColor="?colorOnSecondary"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:text="@{repository.repositoryDescription}"
+            android:text="@{repository.repository.repositoryDescription}"
             android:textColor="?colorOnSecondary"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +69,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@{repository.language}"
+            android:text="@{repository.repository.language}"
             android:textColor="?colorOnSecondary"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@id/repository_description"
@@ -81,7 +81,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="@{String.valueOf(repository.starCount)}"
+            android:text="@{String.valueOf(repository.repository.starCount)}"
             android:textColor="?colorOnSecondary"
             android:textSize="16sp"
             app:drawableStartCompat="@drawable/ic_grade_black_24dp"

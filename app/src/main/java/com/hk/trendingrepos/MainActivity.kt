@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.hk.trendingrepos.databinding.ActivityMainBinding
 import com.hk.trendingrepos.model.Repository
+import com.hk.trendingrepos.model.RepositoryDto
 import com.hk.trendingrepos.presenter.MainActivityPresenter
 import com.hk.trendingrepos.view.RepositoryAdapter
 
@@ -17,7 +18,7 @@ class MainActivity : AppCompatActivity(),MainActivityPresenter.ViewCallBack {
     private lateinit var adapter: RepositoryAdapter
     private lateinit var presenter: MainActivityPresenter
     private lateinit var binding: ActivityMainBinding
-    private val repositoryList = arrayListOf<Repository>()
+    private val repositoryList = arrayListOf<RepositoryDto>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -30,9 +31,11 @@ class MainActivity : AppCompatActivity(),MainActivityPresenter.ViewCallBack {
             repositoryList.clear()
             repositoryList.addAll(it)
             adapter.notifyDataSetChanged()
+            if(it.isNullOrEmpty())
+                presenter.getRepositoriesFromServer()
+
         })
 
-        presenter.getRepositoriesFromServer()
     }
 
     private fun setRecyclerAdapter(): RepositoryAdapter {
